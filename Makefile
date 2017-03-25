@@ -18,4 +18,4 @@ clean:
 articles: $(pandoc_articles)
 
 $(p_articles_out): $(p_articles_in)
-	$(PANDOC) -i $< -o $@
+	$(PANDOC) -i $< --template=templates/pandoc-html.html --css="../css/pandoc.css" -o $@
