@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% set title = title %}
+{% block content %}
+	<div id="header">
+		<h1 class="title">{{title}}</h1>
+		<h2 class="author">{{author}}</h2>
+		<h3 class="date">{{date}}</h3>
+	</div>
+	<div id="article_content">
+		{{content|safe}}
+	</div>
+{% endblock %}
