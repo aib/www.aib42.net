@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 import flask
+import os
 
 import routes
 
 def main():
-	app = flask.Flask(__name__)
+	app = flask.Flask(__name__, root_path=os.getcwd())
 
 	routes.process(app)
 

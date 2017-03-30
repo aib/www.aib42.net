@@ -2,9 +2,9 @@ import flask
 
 import articles
 
-ARTICLE_DIR = '../articles'
-STATIC_DIR = '../html'
-TEMPLATE_DIR = '../templates'
+ARTICLE_DIR = 'articles'
+STATIC_DIR = 'html'
+TEMPLATE_DIR = 'templates'
 
 def process(app):
 	app.template_folder = TEMPLATE_DIR
