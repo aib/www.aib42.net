@@ -8,7 +8,7 @@ def main():
 
 	routes.process(app)
 
-	app.run('0.0.0.0', '80')
+	app.run()
 
 if __name__ == '__main__':
 	main()
