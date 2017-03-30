@@ -1,0 +1,11 @@
+[Unit]
+Description=Web server for www.aib42.net
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/aib/www.aib42.net
+ExecStart=/usr/bin/python3 -u /home/aib/www.aib42.net/server/server.py
+
+[Install]
+WantedBy=multi-user.target
