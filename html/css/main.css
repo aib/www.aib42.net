@@ -1,0 +1,45 @@
+#header {
+	text-align: center;
+}
+
+.title {
+	display: inline;
+}
+
+.author {
+	display: none;
+}
+
+.date {
+	float: right;
+	font-size: 80%;
+}
+
+code {
+	font-weight: bold;
+}
+
+.shell, .file {
+	display: table;
+	border: 1px solid #ccc;
+	background: #eee;
+	padding: 4px;
+	margin-bottom: 1px;
+	margin-top: 1px;
+}
+
+.shell {
+}
+
+.shell.cmd {
+	color: #006;
+	border-radius: 5px;
+}
+
+.shell.out {
+	color: #060;
+}
+
+.file {
+	color: #333;
+}
