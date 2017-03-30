@@ -10,7 +10,7 @@ def main():
 
 	routes.process(app)
 
-	app.run('0.0.0.0', '8000')
+	app.run('0.0.0.0', '80')
 
 if __name__ == '__main__':
 	main()
