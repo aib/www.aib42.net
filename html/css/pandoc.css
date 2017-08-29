@@ -19,7 +19,7 @@ code {
 	font-weight: bold;
 }
 
-.shell, .file {
+.shell, .file, .literal {
 	display: table;
 	border: 1px solid #ccc;
 	background: #eee;
@@ -42,4 +42,9 @@ code {
 
 .file {
 	color: #333;
+}
+
+.literal {
+	color: #333;
+	border: 0px;
 }
