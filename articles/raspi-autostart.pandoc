@@ -49,6 +49,8 @@ If you've come this far, autostart is going to be really easy. The full specific
 
 ~~~ {.shell .cmd}
 mkdir /home/aib/.config/autostart
+~~~
+~~~ {.shell .cmd}
 cp /home/aib/Desktop/MySketch.desktop /home/aib/.config/autostart/
 ~~~
 
