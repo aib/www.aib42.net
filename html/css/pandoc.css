@@ -19,7 +19,22 @@ code {
 	font-weight: bold;
 }
 
-.shell, .file, .literal {
+.filename::before {
+	font-weight: bold;
+	content: "File: ";
+}
+.filename {
+	display: table;
+	border: 1px solid #ccc;
+	color: #066;
+	background: #eee;
+	padding: 4px;
+	margin-bottom: 1px;
+	margin-top: 1px;
+
+}
+
+.code, .shell, .file, .literal {
 	display: table;
 	border: 1px solid #ccc;
 	background: #eee;
