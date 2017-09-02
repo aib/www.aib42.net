@@ -46,6 +46,10 @@ code {
 .shell {
 }
 
+.shell.cmd:before {
+	font-weight: bold;
+	content: attr(data-cwd)"$ ";
+}
 .shell.cmd {
 	color: #006;
 	border-radius: 5px;
