@@ -19,21 +19,11 @@ code {
 	font-weight: bold;
 }
 
-.filename::before {
+.file:before, .code:before {
 	font-weight: bold;
-	content: "File: ";
-}
-.filename {
-	display: table;
-	border: 1px solid #ccc;
 	color: #066;
-	background: #eee;
-	padding: 4px;
-	margin-bottom: 1px;
-	margin-top: 1px;
-
+	content: "File: "attr(data-filename)"\a\a";
 }
-
 .code, .shell, .file, .literal {
 	display: table;
 	border: 1px solid #ccc;
