@@ -1,5 +1,27 @@
 {% extends "main.html" %}
 {% set title = "Welcome" %}
 {% block content %}
-	<div><a href="/articles">Articles</a></div>
+	<div><h3>Articles:</h3></div>
+	<div>
+		<table>
+			<thead>
+				<tr><th>Title</th><th>Date</th></tr>
+			</thead>
+			<tbody>
+			{% for a in articles %}
+				<tr><td><a href="{{a.href}}">{{a.title}}</a></td><td>{{a.date}}</td></tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div><h3>GitHub:</h3></div>
+	<div>
+		<a href="https://github.com/aib">aib</a>
+	</div>
+
+	<div><h3>Contact:</h3></div>
+	<div>
+		<span>aibok42</span>&nbsp;<span class="fill-in-the-blanks">gmail</span>
+	</div>
 {% endblock %}
