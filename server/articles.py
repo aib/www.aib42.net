@@ -6,7 +6,7 @@ import os.path
 import subprocess
 
 PANDOC_CMD = 'pandoc'
-PANDOC_OPTS = []
+PANDOC_OPTS = ['-p']
 
 class Articles(object):
 	def __init__(self):
