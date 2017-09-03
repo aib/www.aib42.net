@@ -48,6 +48,14 @@ code {
 .shell.out {
 	color: #060;
 }
+.shell.out::after {
+	font-weight: bold;
+	color: #066;
+	content: "\a"attr(data-ellipsis);
+}
+.shell.out:not([data-ellipsis])::after {
+	content: none;
+}
 
 .file {
 	color: #333;
