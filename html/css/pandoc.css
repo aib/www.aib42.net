@@ -19,7 +19,7 @@ code {
 	font-weight: bold;
 }
 
-.file:before, .code:before {
+.file::before, .code::before {
 	font-weight: bold;
 	color: #066;
 	content: "File: "attr(data-filename)"\a\a";
@@ -36,7 +36,7 @@ code {
 .shell {
 }
 
-.shell.cmd:before {
+.shell.cmd::before {
 	font-weight: bold;
 	content: attr(data-cwd)"$ ";
 }
