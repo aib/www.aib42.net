@@ -14,18 +14,11 @@ def process(app):
 
 	@app.route('/')
 	def root_r():
-		return flask.render_template('index.html')
+		return flask.render_template('index.html', articles=map(_article_view, _articles.list_by_date()))
 
 	@app.route('/articles', strict_slashes=False)
 	def articles_r():
-		def article_view(a):
-			return {
-				'id': a.id,
-				'title': a.title,
-				'date': a.date,
-				'href': flask.url_for('article_r', article_id=a.id)
-			}
-		return flask.render_template('articles.html', articles=map(article_view, _articles.list_by_date()))
+		return flask.render_template('articles.html', articles=map(_article_view, _articles.list_by_date()))
 
 	@app.route('/article/<article_id>', strict_slashes=False)
 	def article_r(article_id):
@@ -41,3 +34,11 @@ def process(app):
 	@app.route('/<path:path>')
 	def get_path_r(path):
 		return flask.send_from_directory(STATIC_DIR, path)
+
+	def _article_view(a):
+		return {
+			'id': a.id,
+			'title': a.title,
+			'date': a.date,
+			'href': flask.url_for('article_r', article_id=a.id)
+		}
