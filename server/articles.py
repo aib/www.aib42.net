@@ -6,6 +6,7 @@ import os.path
 import subprocess
 
 PANDOC_CMD = 'pandoc'
+PANDOC_OPTS = []
 
 class Articles(object):
 	def __init__(self):
@@ -57,7 +58,7 @@ class Article(object):
 		self.date = parsed_title_block[2]
 
 	def _load_content(self):
-		pandoc = subprocess.run([PANDOC_CMD, '-t', 'html', self.filename], stdout=subprocess.PIPE)
+		pandoc = subprocess.run([PANDOC_CMD] + PANDOC_OPTS + ['-t', 'html', self.filename], stdout=subprocess.PIPE)
 		self.content = pandoc.stdout.decode('utf-8')
 
 def parse_title_block(title_block):
