@@ -3,12 +3,13 @@ import os
 
 import routes
 
-def main():
+def load():
 	app = flask.Flask(__name__, root_path=os.getcwd())
-
 	routes.process(app)
+	return app
 
-	app.run()
+def main():
+	load().run()
 
 if __name__ == '__main__':
 	main()
