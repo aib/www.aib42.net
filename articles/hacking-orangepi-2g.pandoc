@@ -6,21 +6,19 @@ This article documents my fiddling around with the [Orange Pi 2G-IOT][opi2g-home
 
 ## The Board
 
-The Orange Pi 2G-IOT is one of a series of single-board computers in the [Orange Pi][opi-homepage] product line. Unique to the series, it has a RDA8810 SoC which gives it 2G GSM connectivity. It was, most likely, originally designed as a phone. In fact, it comes loaded with an Android OS and as far as I can gather, it is a single touchscreen (and maybe a battery) away from being an actual smart phone.
+The Orange Pi 2G-IOT is one of a series of single-board computers in the [Orange Pi][opi-homepage] product line. It has a RDA8810 SoC and, uniquely in the series, 2G GSM connectivity. It was, most likely, originally designed as a phone. In fact, it comes loaded with an Android OS and as far as I can gather, it is a single touchscreen (and maybe a battery) away from being an actual smart phone.
 
-The board has a micro SD/MMC card slot, a ~512 MiB internal NAND flash memory, and a jumper to select which one to boot off of.
+The board has a micro SD/MMC card slot, a ~512 MiB internal NAND flash memory, and a jumper to select which one to boot off of. While it's easy to write an image to the SD card and boot it, the NAND counterpart is challenging because of the lack of tools, documentation and official images. Hopefully, this article and the accompanying tools remedy some of that.
 
 ## Installing GNU/Linux on the NAND
 
-We flash the memory in partitions, so we need:
+The flash memory is divided into partitions, so our list of basic requirements is:
 
 * A Partition Table
 * The partition images
 * A flashing tool
 
-In this article, we will be using a single small bootloader partition and a single large GNU/Linux partition. We will be using my own flashing tool along with two required flashing stage binaries, `pdl1.bin` and `pdl2.bin`.
-
-We will generate the system image by slightly modifying one of the official SD card distributions, the bootloader and the two PDL[^pdl-meaning] binaries by building a fork of the bootloader code, and the partition table by hand.
+We will be using a single small bootloader partition and a single large GNU/Linux system partition. We will be using my own flashing tool along with two required flashing stage binaries, `pdl1.bin` and `pdl2.bin`. We will generate the system image by slightly modifying one of the official SD card distributions, the bootloader and the two PDL[^pdl-meaning] binaries by building a fork of the bootloader code, and the partition table by hand.
 
 ### The Partition Table
 
@@ -30,15 +28,15 @@ Every process involving the NAND starts with the partition table. This table div
 mtdparts=rda_nand:2M@128K(bootloader),2M(factorydata),2M(misc),4M(modem),8M(boot),10M(recovery),300M(system),300M(vendor),-(userdata)
 ~~~
 
-U-Boot also uses this format so it is all we will ever need.
+U-Boot also uses this format so it is the only format we will ever need.
 
-On reboot, the RDA8810 looks for the boot image at address 0[^bootloader-offset]. This is where the bootloader will go, and thus it is where we will have the partition called `bootloader`. We'll round it off to, say, 2 MiB and leave the rest of the memory to our main single partition. Assuming the NAND is 512 MiB[^nand-size], that sould be 510 MiB. Let's call the partition `nandroot`:
+On reboot, the RDA8810 looks for the boot image at address 0[^bootloader-offset]. This is where the bootloader will go, and thus it is where we will have the partition called `bootloader`. We'll round it off to, say, 2 MiB and leave the rest of the memory to our single system partition. Assuming the NAND is 512 MiB[^nand-size], that sould be 510 MiB. Let's call the partition `nandroot`:
 
 ~~~ {.literal}
 mtdparts=rda_nand:2M(bootloader),510M(nandroot)
 ~~~
 
-And that's it! Later, we will work this partition table into the bootloader, the PDL2 and the boot scripts.
+And that's it! Later, we will work this partition table into the bootloader, the PDL2, and the boot scripts.
 
 ### The GNU/Linux Image
 
@@ -118,7 +116,9 @@ bin/
 bin/bash
 ~~~
 
-We should have the root filesystem at `~/nandfs/nandroot`, minus a custom fstab and a custom boot script. Let's do fstab first. On my system, `/etc/fstab` looks like:
+We should have the root filesystem at `~/nandfs/nandroot`, minus a custom fstab and a custom boot script.
+
+Let's do fstab first. On my system, `/etc/fstab` looks like:
 
 ~~~ {.file data-filename="/etc/fstab"}
 # OrangePI fstab
@@ -195,7 +195,7 @@ bootz ${kernel_addr} ${initrd_addr}
 # mkimage -C none -A arm -T script -d /boot/boot-nand.cmd /boot/boot-nand.scr
 ~~~
 
-It instructs U-Boot to use ubifsload to load the images and additionally passes `ubi.mtd=1` and `mtdparts=...` to the kernel. Creating the compiled version, `boot-nand.scr` is as simple as following the instructions in the file:
+It instructs U-Boot to use ubifsload to load the images and additionally passes `ubi.mtd=1` and `mtdparts=...` to the kernel. Creating the compiled version, `boot-nand.scr`, is as simple as following the instructions in the file:
 
 ~~~ {.shell .cmd}
 sudo mkimage -C none -A arm -T script -d /boot/boot-nand.cmd /boot/boot-nand.scr
@@ -257,7 +257,7 @@ vol_alignment=1
 
 You may have noticed that the volume size is 480 MiB. This is not only because the exact maximum size is hard to calculate, but also in case someone needs an extra volume in the future[^second-volume-note].
 
-In order to create the UBI image, we need to call `ubinize` with another set of parameters; this time the physical eraseblock (PEB) size in addition to the minimum I/O size. The PEB size is the page size of the NAND (256 KiB in our case) and the minimum I/O size is still the subpage size (4 KiB). Here is the third small schell script:
+In order to create the UBI image, we need to call `ubinize` with another set of parameters; this time the physical eraseblock (PEB) size in addition to the minimum I/O size. The PEB size is the page size of the NAND (256 KiB in our case) and the minimum I/O size is still the subpage size (4 KiB). Here is the third small shell script:
 
 ~~~ {.file data-filename="mkubi.sh" data-language="bash"}
 #!/bin/bash
@@ -278,7 +278,7 @@ Let's call it:
 sudo ~/nandfs/mkubi.sh
 ~~~
 
-And the image should be ready at `~/nandfs/ubi.img`. I suggest using `rsync -P` to get it off the device as its Wi-Fi is not very stable.
+And the image should be ready at `~/nandfs/ubi.img`. I suggest using `rsync -P` to get it off the device as the device's Wi-Fi is not very stable.
 
 ### The Bootloader
 
@@ -341,7 +341,7 @@ Finally, we can go on to...
 
 By now you should have `ubi.img`, `pdl1.bin`, `pdl2.bin` and `u-boot.rda`. Get my flashing script either [directly][flasher-direct] or by cloning its [repository][flasher-repo].
 
-Make sure the boot device selector jumper is in the NAND position and put your Orange Pi into OTG/recovery mode by powering it up with the button depressed[^depressed]. The Orange Pi should identify itself as a USB HID CDC ACM device and your system should assign it a device node, probably `/dev/ttyACM0`. With all the files in the same directory, run:
+Make sure the boot device selector jumper is in the NAND position and put your Orange Pi into OTG/recovery mode by powering it up with the button depressed[^depressed]. (DIP switch #1 may also need to be in the ON position.) The Orange Pi should identify itself as a USB HID CDC ACM device and your system should assign it a device node, probably `/dev/ttyACM0`. With all the files in the same directory, run:
 
 ~~~ {.shell .cmd}
 python3 opi2g_nand_write.py -p /dev/ttyACM0 --format-flash --pdl1 pdl1.bin --pdl2 pdl2.bin bootloader:u-boot.rda nandroot:ubi.img
