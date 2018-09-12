@@ -1,0 +1,127 @@
+% The 5 Levels of Logging
+% aib
+% 20180912
+
+Logging is one of those concepts in software development where almost all (if not actually *all*) software would benefit tremendously from having it. I often find that it is the first subsystem I set up when starting a large project. There is much to be said about its benetifs, but I'll leave that to someone (or sometime) else. Right now, I would like to talk about logging levels.
+
+Logging levels are a brilliant (and simple, as these often go hand-in-hand) addition to your basic "scrolling lines of text" logging. Each message is assigned a level, signifying the importance of the message or the severity of its implications. "Your computer is on fire", for example, could be a *critical* message whereas "Unable to find the config file" would probably be assigned a lower level of importance.
+
+Many applications and libraries define their own levels (see [External Examples] for some examples) according to their own or their users' needs. While there is of course no *one true way* of doing these things, I would like to talk about the five (or six, or four) that I find are the most crucial, the fundamental set to base your own levels (and your thinking) on.
+
+I will also talk a bit about the colors (or rather, styles) I tend to assign to these levels, as a color- (or style-) distinct log is much easier to follow. Using it will make the general status of your program discernible from a distance—and by untrained people! And who knows, you might once get to have your lunch away from your computer.
+
+
+## Error
+
+An error has occurred. There is no question about it (or it's so likely that there's no point in making the distinction). The source of the error might be external, but people should look into this.
+
+Use this for definite error situations that require attention (and most probably, work). Most thrown exceptions that cannot be gracefully handled fall under Error.
+
+**Style:** Something that catches attention. I use red text (on my black terminal background).
+
+#### Examples:
+* Cannot find file "crucial.dat"
+* Error processing data: &lt;Exception&gt; [stack trace here or as a subsequent Debug message]
+* &lt;Exception&gt; while connecting to the database
+
+
+## Warning
+
+An error might have occurred. I, a mere log message, am unable to analyze the situation. People should *probably* look into this.
+
+This is probably an error in a parallel universe. ... or there could be a situation the program handled (but would like *not* to have to do again, thankyouverymuch).
+
+**Style:** Something that catches attention without being too annoying, in case there's a transient problem and you're stuck with many of these for a while. Distinct from Error's style. I use yellow text.
+
+### Examples:
+* Connection closed, reconnecting in 2s
+* Unable to find "logging.conf" [specified in the configuration file], falling back to the default configuration
+* Connection attempt timed out after 30s
+* Got FileVersionTooOldException, falling back to Version12Parser
+
+
+## Info
+
+The user is being informed of an operation or status change. Keep calm and carry on.
+
+Info is arguably the most verbose level (the general, non-technical) users should be exposed to. It is what you wouldn't mind being read to you aloud. It is what would be declared to the captain on the bridge of your favorite sci-fi flick's spaceship. It should contain very little technical detail; probably only as much as is of interest to your average user (e.g. filenames).
+
+**Style:** Something that stands out from the levels below. I use white text.
+
+### Examples:
+* Agent initialized
+* Loading save "yeti02"
+* Entering warp speed
+* Current directory is "/tmp"
+* Uplink established
+* Render complete, took 42.999s
+
+
+## Debug
+
+If you can read this, you are standing too close to the program.
+
+This is why you're keeping a log file. This is what you need to fix the bug. This is what the developers would kill to get their hands on.
+
+Debug is your go-to level for dumping program flow and other technical miscellania. Unless it's flooding the log (in which case Trace might be a better level) or a higher level message is clearly more suitable, your Debug message is probably worth keeping, given that you've thought of writing it at all. If it turns out to be one-to-one correlated with another Debug or higher level message without containing more information, then you can think about deleting it.
+
+**Style:** Something that is easy to ignore. I use light gray/beige text, my terminal's default text color.
+
+### Examples:
+* Reading configuration from "/etc/octarine/octarine.conf"
+* Overriding configuration with "/home/aib/.octarinerc"
+* Analysis complete, building graph...
+* Connecting to server:4242 as "user":"hunter2"
+* Sending 2 message(s)
+* Render time breakdown:
+* Foo 0.990s
+* Bar 42.009s
+
+
+## Trace
+
+Here are some technical details that are irrelevant, unless you happen to be looking for them.
+
+Trace is detailed debugging information you probably don't want to have enabled all the time (unless you sell hard drives to people who keep logs). It can contain information such as which functions are called (hence the name) or exactly what network packets are being exchanged with a client. It's good for catching low level errors, but usually only after you've narrowed their location down to between a couple of Debug messages.
+
+Trace messages will largely contain information you can already guess at ("Debug says 'logging in', so this is the login packet") and as such, maybe not be of much help unless it's the assumptions you are making that are wrong. ("Wait, is that a log*out*?!", "Hmm, `foo` should be called here. Why isn't `foo`'s Trace being printed then?")
+
+**Style:** Something that can get lost among even the debug messages. I use dark gray, though it's usually disabled.
+
+### Examples:
+* Calling function "foo" with parameters ("baz", "bar", 42)
+* ->`GET / HTTP/1.1\nHost: localhost\n\n`
+* Got: `<?xml version="1.0" encoding="UTF-8" ?>\n<ohboy>\n` [...]
+
+
+## Fatal
+
+An error has—no, sorry, a *fatal* error has occurred. We are quitting now. Good luck!
+
+This should be above Error, but I use it even less than Trace so it gets its place here at the bottom. Fatal errors, as their name suggests, indicate a situation where it's impossible to continue to run the program. And it is for this very reason that it doesn't make much sense for them to have their own level—you only ever get to see one per invocation. But Fatal errors do have their place where Errors are common and recoverable (or restarts are common), so it's worth mentioning them.
+
+**Style:** More attention-grabbing than Errors, if you've not run out of styles already. I use purple text; similar to Error's red from a distance but distinct when you need it to be.
+
+#### Examples:
+* Out of memory
+* Unable to allocate 65536 bytes of disk space
+* License expired, switch to free software
+
+
+## External Examples
+
+Any self-respecting logging API or library should have built-in levels (and probably support for user-defined ones). Here are some widely used ones, for reference:
+
+* Linux's [printk][printk]
+* Python's [logging][python-logging]
+* Java's [java.util.logging.Level][java-level] or log4j's [org.apache.log4j.Level][log4j-level]
+* Javascript's various console.*level* calls ([WHATWG's][whatwg-console] or [Node.js'][nodejs-console] Console API specs)
+* NLog's [log levels][nlog-level]
+
+[printk]: <https://en.wikipedia.org/wiki/Printk#Logging_Levels>
+[python-logging]: <https://docs.python.org/library/logging.html#logging-levels>
+[java-level]: <https://docs.oracle.com/javase/6/docs/api/java/util/logging/Level.html>
+[log4j-level]: <https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/Level.html>
+[whatwg-console]: <https://console.spec.whatwg.org/#contents>
+[nodejs-console]: <https://nodejs.org/api/console.html#toc>
+[nlog-level]: <https://github.com/nlog/nlog/wiki/Log-levels>
