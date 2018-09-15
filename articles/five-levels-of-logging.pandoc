@@ -29,7 +29,7 @@ Use this for definite error situations that require attention (and most probably
 
 An error might have occurred. I, a mere log message, am unable to analyze the situation. People should *probably* look into this.
 
-This is probably an error in a parallel universe. ... or there could be a situation the program handled (but would like *not* to have to do again, thankyouverymuch).
+This is probably an error in a parallel universe. It could be something indicative of potential current or future problems (slow response, connection dropped, low memory, ...) or it could be the announcement of an erroneous situation the program handled (but would like *not* to have to do again, thankyouverymuch).
 
 **Style:** Something that catches attention without being too annoying, in case there's a transient problem and you're stuck with many of these for a while. Distinct from Error's style. I use yellow text.
 
