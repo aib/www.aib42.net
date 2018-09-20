@@ -71,7 +71,7 @@ Debug is your go-to level for dumping program flow and other technical miscellan
 * Reading configuration from "/etc/octarine/octarine.conf"
 * Overriding configuration with "/home/aib/.octarinerc"
 * Analysis complete, building graph...
-* Connecting to server:4242 as "user":"hunter2"
+* Connecting to server:4242 as "user"
 * Sending 2 message(s)
 * Render time breakdown:
 * Foo 0.990s
