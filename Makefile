@@ -1,5 +1,3 @@
-PANDOC := pandoc
-
 ARTICLES_IN_DIR := articles
 ARTICLES_OUT_DIR := html/articles
 
@@ -18,4 +16,4 @@ clean:
 articles: $(pandoc_articles)
 
 $(p_articles_out): $(p_articles_in)
-	$(PANDOC) -i $< --template=templates/pandoc-html.html --css="../css/pandoc.css" -p -o $@
+	pandoc -i $< --template=templates/pandoc-html.html --css="../css/pandoc.css" -p -o $@
