@@ -3,6 +3,7 @@ import flask
 import articles
 
 ARTICLE_DIR = 'articles'
+FILE_DIR = 'files'
 STATIC_DIR = 'html'
 TEMPLATE_DIR = 'templates'
 
@@ -26,6 +27,10 @@ def process(app):
 			'content': article.content
 		}
 		return flask.render_template('article.html', **view)
+
+	@app.route('/file/<filename>', strict_slashes=False)
+	def file_r(filename):
+		return flask.send_from_directory(FILE_DIR, filename)
 
 	@app.route('/<path:path>')
 	def get_path_r(path):
