@@ -1,3 +1,7 @@
+A Flexible, Sectioned File Specification
+aib
+20190218
+
 File consists of a fixed-length header and a variable-length body consisting of any number of "sections":
 
   0   1   2   3   4   5   6   7   8    ...    n
