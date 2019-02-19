@@ -16,10 +16,6 @@ def process(app):
 	def root_r():
 		return flask.render_template('index.html', articles=map(_article_view, _articles.list_by_date()))
 
-	@app.route('/articles', strict_slashes=False)
-	def articles_r():
-		return flask.render_template('articles.html', articles=map(_article_view, _articles.list_by_date()))
-
 	@app.route('/article/<article_id>', strict_slashes=False)
 	def article_r(article_id):
 		article = _articles.get(article_id)
