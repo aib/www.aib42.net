@@ -1,0 +1,41 @@
+File consists of a fixed-length header and a variable-length body consisting of any number of "sections":
+
+  0   1   2   3   4   5   6   7   8    ...    n
++---+---+---+---+---+---+---+---+------//-------+
+|  Magic Word   | # of Sections | Sections...   |
++---+---+---+---+---+---+---+---+------//-------+
+
+- Magic Word is a 32-bit constant identifying the file type.
+- Number of Sections is a 32-bit integer denoting the number of sections in the file.
+
+Sections are any number of individual sections consisting of Section Type, Section Length, variable-length Section Data and optional Padding:
+
+  0   1   2   3   4   5   6   7   8    ...    n  k-2 k-1  k
++---+---+---+---+---+---+---+---+------//-------+---+---+---+
+| Section Type  | Section Length| (Section Data)| (Padding) |
++---+---+---+---+---+---+---+---+------//-------+---+---+---+
+
+- Section Type is a 32-bit word signifying the nature of the data in the section.
+- Section Length is a 32-bit integer denoting the number of octets in Section Data.
+- Section Data is any number of octets whose meaning depend on the Section Type.
+- Padding is 0, 1, 2 or 3 octets with the value 0, making the section size a multiple of 4.
+
+If Section Length is L, the whole section is (4 + 4 + L + L%4) octets long, or 8+L rounded up to the nearest multiple of 4.
+
+All integers are in network byte order (i.e. they are big endian).
+
+A whole file might look like:
+
+  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
++---------------+---------------+---------------+---------------+
+|  Magic Word   | # of Sections | Sec. #0 Type  | Sec. #0 Length|
++---------------+---------------+---+-----------+---------------+
+| Sec. #0 Data                      |  Padding  | Sec. #1 Type  |
++---------------+---------------+---+-----------+---------------+
+| Sec. #1 Length| Sec. #2 Type  | Sec. #2 Length| Sec. #2 Data  |
++---------------+---------------+---------------+---------------+
+| Sec. #3 Type  | Sec. #3 Length| Sec. #3 Data
++---------------+-----------+---+--------------------------------
+                            |Pad|
+----------------------------+---+
+
