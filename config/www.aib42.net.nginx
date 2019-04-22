@@ -1,0 +1,21 @@
+server {
+	listen 80;
+	server_name aib42.net www.aib42.net;
+	return 301 https://$host$request_uri;
+}
+
+server {
+	listen 443 ssl;
+	server_name aib42.net www.aib42.net;
+
+	ssl_certificate /etc/letsencrypt/live/aib42.net/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/aib42.net/privkey.pem;
+	ssl_dhparam /etc/ssl/certs/dhparam.pem;
+	ssl_session_cache shared:SSL:32m;
+
+	location / {
+#		proxy_pass http://localhost:5000;
+		include uwsgi_params;
+		uwsgi_pass unix:///tmp/www.aib42.net.uwsgi.sock;
+	}
+}

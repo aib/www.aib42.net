@@ -1,0 +1,51 @@
+{% extends "main.html" %}
+{% set title = "Welcome" %}
+{% block content %}
+	<div><h3>Articles:</h3></div>
+	<div>
+		<table>
+			<thead>
+				<tr><th>Title</th><th>Date</th></tr>
+			</thead>
+			<tbody>
+			{% for a in articles %}
+				<tr><td><a href="{{a.href}}">{{a.title}}</a></td><td>{{a.date}}</td></tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div><h3>Files:</h3></div>
+	<div>
+		<table>
+			<thead>
+				<tr><th>Name</th><th>Description</th><th>Date</th></tr>
+			</thead>
+			<tbody>
+				<tr><td><a href="/file/sectioned-file.txt">sectioned-file.txt</a></td><td>A Flexible, Sectioned File Specification</td><td>20190218</td></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div><h3>Works:</h3></div>
+	<div>
+		<table>
+			<thead>
+				<tr><th>Title</th><th>Description</th></tr>
+			</thead>
+			<tbody>
+				<tr><td><a href="https://github.com/aib/Shear">Shear</a></td><td>A digital instrument and an art installation; a sculpture you can play.</td></tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div><h3>GitHub:</h3></div>
+	<div>
+		<a href="https://github.com/aib">aib</a>
+	</div>
+
+	<div><h3>Contact:</h3></div>
+	<div>
+		<span>aibok42</span>&nbsp;<span class="fill-in-the-blanks">gmail</span>
+	</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+.fill-in-the-blanks::before {
+	content: "@";
+}
+
+.fill-in-the-blanks::after {
+	content: ".com";
+}
