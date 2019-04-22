@@ -13,9 +13,15 @@ server {
 	ssl_dhparam /etc/ssl/certs/dhparam.pem;
 	ssl_session_cache shared:SSL:32m;
 
-	location / {
-#		proxy_pass http://localhost:5000;
-		include uwsgi_params;
-		uwsgi_pass unix:///tmp/www.aib42.net.uwsgi.sock;
+	root /home/aib/proj/www.aib42.net/html;
+	disable_symlinks off;
+	autoindex on;
+
+	location /article {
+		rewrite ^/article/(.*)$ /articles/$1.html break;
+	}
+
+	location /file {
+		rewrite ^/file/(.*)$ /files/$1 break;
 	}
 }
