@@ -5,3 +5,7 @@
 .fill-in-the-blanks::after {
 	content: ".com";
 }
+
+table.listing td {
+	padding-right: 10px;
+}
