@@ -21,6 +21,10 @@ code {
 	tab-size: 4; -moz-tab-size: 4; -o-tab-size: 4;
 }
 
+.note {
+	font-size: smaller;
+}
+
 .file[data-filename]::before, .code[data-filename]::before {
 	font-weight: bold;
 	color: #066;
