@@ -16,7 +16,7 @@ header {
 }
 
 code {
-	font-weight: bold;
+	font-size: 110%;
 	white-space: pre-wrap;
 	tab-size: 4; -moz-tab-size: 4; -o-tab-size: 4;
 }
