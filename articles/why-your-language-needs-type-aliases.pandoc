@@ -1,0 +1,143 @@
+% Why Your Language Needs Type Aliases
+% aib
+% 20200219
+
+Type aliasing is one of those things you don't really need until you do, and when you do you *really* do. It's the ability to refer to a type by an additional name to its own. C's `typedef`, if you're familiar with it.
+
+It's a fundamental operation in type systems, somewhat analoguous to using a variable to refer to another in code. Regarding how simple it should be to implement, it's a wonder that some languages don't have it. And your language[^your-language], too, is included in this list, or in any case that's what the rest of the text is going to assume. As such, you're missing out on life-<strike>saving</strike> easening features to do with:
+
+## Repetition
+
+How many times can you write `SomeLibrary.VectorMath.Vector3<SomeOtherLibrary.InfinitePrecision.Float>` before that house and farm in the country start sounding not like such a bad idea, after all? If this were executable code (instead of a type declaration) you would have refactored it out to a function by now. As it is, you are considering macros.
+
+If you had type aliases you could have renamed the whole thing "`Vec3`".
+
+The language designers have thought of this and blessed you with a mechanism to import namespaces? Great! Tell them to finish the job and implement proper type aliases. *Finish*, because importing is a form of aliasing, usually `namespace.Foo <-> Foo` and `namespace <-> ns_renamed`. (You might, in fact, have another limited form of type aliasing if your language lets you use two identically named types from two different namespaces by letting you rename one instead of making you qualify them at every usage.)
+
+Oh, and if you think the infinite-precision float type should have been named `InfFloat` or somesuch, it might also be because you're lacking type aliases. `Float` is already in the namespace `InfinitePrecision`, why should it further call itself "Inf"? It was *you* who decided they'd rather use `Float` than `InfinitePrecision.Float`, so you have no right to complain, I'm afraid. If only there were a mechanism that let you rename types...
+
+## Refactoring
+
+With great DRY comes great refactoring.[^dry]
+
+Creating a 3D scene from scratch, you don't know which floating-point type to use. Most languages use `double` by default. OpenGL has [three][opengl-float-types] but seems to favor `float`. With C or C++, you'd use:
+
+~~~ {.code data-language="c"}
+typedef float real;
+~~~
+
+and pay it no second thought (apart from what it should really be called. `real_t`?) `float`s may turn out not to have enough precision or `double`s may turn out to be slower, but you shouldn't care yet. Making something easy-to-change is more important than making it right.
+
+Anyhow; with a type alias, the change is a simple, single-keyword one. 
+
+With type aliases it becomes so simple that it doesn't feel like refactoring. And maybe it's not; it's more similar to changing constants than rewriting code.
+As it goes in defense of named constant values, so it goes in defense of named constant types.
+MAGIC_VALUES
+
+
+## Naming Your Variables
+
+Do you like being able to name your variables? With parametric polymorphism[^parametric-polymorphism], *types* become your *variables*.
+Having to call the number of TODO `int` or 
+Having to use a type named "int" when you need a number passed to your function is like having to use a parameter named "param2" when you need a second parameter.
+
+Note that polymorphic functions already have type variables which (hopefully) you are allowed to name.
+All you're asking for is the ability to name the dependent types as well. (Also standard types and their dependents.)
+Looking through an old C# codebase for long types that might benefit from aliasing, I came across this:
+
+~~~ {.code data-language="csharp"}
+Dictionary<EquipmentType, Dictionary<EquipmentCardType, Dictionary<uint, Func<ReportItem, bool>>>> reportingFilters;
+~~~
+[(Types renamed so they're better understandable out of context.)]{.note}
+
+
+I would have flattened these dictionaries, so let's do that first:
+
+~~~ {.code data-language="csharp"}
+Dictionary<(EquipmentType, EquipmentCardType, uint), Func<ReportItem, bool>> reportingFilters;
+~~~
+
+Can you understand what it does? It's a mapping of equipment and card data to "filter" functions which take a report item and return whether said item should be included in the report. Our source domain was big and complex, and our requirements were along the lines of "do this for this type of equipment, but only if the selected card is this, and that only on leap years and months with a blue moon", so maps of maps and maps of functions weren't uncommon. This right here is such an example, one where we mapped the equipment type, the card type and the... the... umm—
+
+I have no idea what that `uint` represents. And that's the point, really. If the first isn't called `CustomClass` nor the second `enum`, why is the third called `uint`?
+
+One might argue that a custom class should be created (turns out it's a `CardSlotNumber`, by the way) but I would argue that there must be an easy way to rename that type *regardless of whether a custom class is created*.
+
+(finalizing thoughts for the argument)
+
+## Subtyping doesn't work
+
+~~~ {.code data-language="java"}
+class Username extends String {}
+~~~
+
+Assuming your language even allows it in the first place, there is a problem. Since the new type is a *subtype*, it can only be substituted where the usage is *covariant*. And the original type can only be subtituted where the usage is *contravariant*.[^covariance-and-contravariance] While variance is a long and interesting tangent, we can summarize the problem here:
+
+~~~ {.code data-language="java"}
+class Username extends String {}
+
+// Input parameters are covariant,
+// Username can replace String but not vice versa:
+
+void takeString(String s) {}
+takeString(new Username("foo")); // Works
+
+void takeUsername(Username u) {}
+takeUsername(new String("foo")); // Doesn't work
+
+// Output parameters/return types/assignment are contravariant,
+// String can replace Username but not vice versa:
+
+String sv = new Username("foo");            // Works
+String sf() { return new Username("foo"); } // Works
+
+Username uv = new String("foo");            // Doesn't work
+Username uf() { return new String("foo"); } // Doesn't work
+~~~
+
+So no, subtyping does not work.
+
+## Neither does most language magic'ry
+
+Reflection, where most magic happens, is straight out because we need type aliases at compile-time. This leaves us with ugly hacks such as `using` aliases or needlessly introduced class type parameters, which each have a drawback of their own. And if I might philosophise for a moment, I'd guess that there is a simple reason for this: The type alias is a very basic feature and is therefore hard to emulate with advanced or complex features.
+
+To be fair, some features like C#'s implicit conversion "operators" allow you to come close or even create a single type alias, but require duplicated work for subsequent aliases. And if you're already beyond using simple, zero-cost type aliases, you might as well use:
+
+## Something Possibly Better
+(or arguably completely orthogonal)
+
+Haskellers call it "[newtype][haskell-newtype]". Rustaceans call it... well, [the same][rust-newtype]. Clasically, I guess it could be called a "wrapper"[^newtype-classical-name]. What it does is rename and contain a single type so that while remaining isomorphic, it's not interchangeable or implicitly convertable. It might look like:
+
+~~~ {.code data-language="java"}
+class Username extends Wrapper<String> {}
+
+Username username = new Username("aib");
+print_username_length(username);
+
+void print_username_length(Username u)
+{
+	print("Username is %d characters", string_length(u.value));
+}
+~~~
+
+The wrapping and unwrapping of the enclosed value is explicit (done here with a constructor and a property access, respectively), preventing mixage of the new type with the wrapped type. This makes such a mistake as:
+
+~~~ {.code data-language="c"}
+void do_something(Username u, Password p) { ... }
+do_something(getPassword(), getUsername());
+~~~
+
+a syntax error.
+
+## Conclusion? TODO
+
+
+[opengl-float-types]: <https://www.khronos.org/opengl/wiki/OpenGL_Type>
+[haskell-newtype]: <https://wiki.haskell.org/Type>
+[rust-newtype]: <https://doc.rust-lang.org/1.0.0/style/features/types/newtype.html>
+
+[^your-language]: Whatever that means; probably "your favorite language" or "the language you use the most at work, nowadays". I'd be delighted if it meant "the popular programming language you've designed"!
+[^dry]: DRY: Don't Repeat Yourself; read "absence of repetition"
+[^parametric-polymorphism]: Read "generic programming"
+[^covariance-and-contravariance]: <https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)>
+[^newtype-classical-name]: "Type wrapper" and "value wrapper" sound equally good, so there must be something wrong with both of them (or me).
