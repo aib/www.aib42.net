@@ -1,0 +1,48 @@
+% A Small Lexicon of Concurrency/Parallel Programming Terms
+% aib
+% 20221027
+
+**Task**: A general abstract term, used here and elsewhere, to refer to some unit of work. Tasks may be represented by threads, processes, functions or even "certain parts of some code".
+
+**Processor**: A term used here to refer to a CPU or a CPU core; something capable of executing a single task at any given time.
+
+**Concurrency**: The ability of a part of code or task to begin before another has finished executing. If two tasks overlap in time, they are *concurrent*.
+
+**Parallelism**: When two concurrent parts of code or tasks are being executed simultaneously (i.e. on different processors).
+
+**Multitasking**: The ability to run two or more concurrent tasks on one or more processors. This is done by *context switching* where a non-finished task is paused to be replaced by another one.
+
+**Context Switch**: In a *multitasking* system, the act of pausing a task and saving its *context* (to be resumed later), loading another paused task's *context* and resuming executing that task.
+
+**Scheduler**: The code that executes *context switches* and decides which task to switch to.
+
+**Preemptive Multitasking**: Multitasking by forcibly interrupting tasks to run the *scheduler*/other tasks.
+
+**Cooperative Multitasking**: Multitasking where the tasks voluntarily *yield* control to the *scheduler*/other tasks.
+
+**Yield**: See *cooperative multitasking*
+
+**Thread**: The most common concretization of a task. Threads usually live in *processes* and are *scheduled* by the operating system. A thread's *context* is, along with the state of the processor running it, its memory, which consists of its *stack* and an optional *thread-local storage*.
+
+**Process**: The most common representation of a program or program instance in an operating system. Processes have their own (private) memory, open files, devices and other resources. They have one or more *threads* which share these resources and can access them freely.
+
+**Multithreading**: Means of achieving parallelism in code (or hoping to) by using multiple *threads* within a *process*, dividing/sharing the workload.
+
+**Multiprocessing**: Achieving parallelism by using multiple processors. In some contexts, the *process* analogue to *multithreading*: using multiple processes to achieve parallelism in code.
+
+**User-mode Threads / Green Threads / Fibers**: *Cooperatively multitasked* threads that use a *scheduler* built into the program code. As such, they (the user-mode threads *and* the scheduler) can be tailored to the program's specific needs. *Context switching* between user-mode threads is lighter than between normal (OS-level) threads since it occurs within the process and does not need to invoke the operating system's scheduler.
+
+**M:N Threading / M:N Model**: Using multiple (N) operating system threads to run many (M) user-mode threads. Somewhat analogous to running M threads on N processors.
+
+**Synchronous / Blocking (Function or Mechanism)**: A function or mechanism that "returns" once its task is completed. They are said to *block* their callers while they are running.
+
+**Asynchronous / Non-blocking (Function or Mechanism)**: A function or mechanism that "returns" or finishes after starting a task. As asynchronous functions cannot return the result of this task, they must use other means of communication.
+
+**Future / Promise**: An object that represents an ongoing task or its result once finished. Returning a future is one way for asynchronous functions to share their result.
+
+**`async`/`await`**: Keywords used to implement *cooperative multitasking* in code. `async` functions return a *future* on which `await` waits and returns the value. `await` is *synchronous* from the point of view of the caller and *blocks* it, but it *yields* until the *future* completes, allowing other tasks (possibly the one just started) to run.
+
+**Coroutine**: A function (or a superset of functions) which can suspend, *yield* execution to another and resume later, in a form of *cooperative multitasking*.
+
+**Generator**: A coroutine which *yields* to its caller, "generating" a value each time it does so.
+
