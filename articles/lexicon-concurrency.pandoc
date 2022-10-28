@@ -1,6 +1,6 @@
-% A Small Lexicon of Concurrency/Parallel Programming Terms
+% A Small Lexicon of Concurrency and Parallel Programming Related Terms
 % aib
-% 20221027
+% 20221028
 
 **Task**: A general abstract term, used here and elsewhere, to refer to some unit of work. Tasks may be represented by threads, processes, functions or even "certain parts of some code".
 
@@ -34,9 +34,9 @@
 
 **M:N Threading / M:N Model**: Using multiple (N) operating system threads to run many (M) user-mode threads. Somewhat analogous to running M threads on N processors.
 
-**Synchronous / Blocking (Function or Mechanism)**: A function or mechanism that "returns" once its task is completed. They are said to *block* their callers while they are running.
+**Synchronous / Blocking (Function or Mechanism)**: A function or mechanism that waits until its task is completed, blocking its caller and thus stopping it from doing anything else concurrently.
 
-**Asynchronous / Non-blocking (Function or Mechanism)**: A function or mechanism that "returns" or finishes after starting a task. As asynchronous functions cannot return the result of this task, they must use other means of communication.
+**Asynchronous / Non-blocking (Function or Mechanism)**: A function or mechanism that doesn't wait until its task is completed, returning ("finishing") after starting it. As asynchronous functions cannot return the result of this task, they must use other means of communication.
 
 **Future / Promise**: An object that represents an ongoing task or its result once finished. Returning a future is one way for asynchronous functions to share their result.
 
@@ -45,4 +45,3 @@
 **Coroutine**: A function (or a superset of functions) which can suspend, *yield* execution to another and resume later, in a form of *cooperative multitasking*.
 
 **Generator**: A coroutine which *yields* to its caller, "generating" a value each time it does so.
-
